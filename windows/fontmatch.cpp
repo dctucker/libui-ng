@@ -24,8 +24,8 @@ static std::map<uiTextStretch, DWRITE_FONT_STRETCH> dwriteStretches = {
 
 // for the most part, DirectWrite weights correlate to ours
 // the differences:
-// - Minimum — libui: 0, DirectWrite: 1
-// - Maximum — libui: 1000, DirectWrite: 999
+// - Minimum - libui: 0, DirectWrite: 1
+// - Maximum - libui: 1000, DirectWrite: 999
 // TODO figure out what to do about this shorter range (the actual major values are the same (but with different names), so it's just a range issue)
 DWRITE_FONT_WEIGHT uiprivWeightToDWriteWeight(uiTextWeight w)
 {
