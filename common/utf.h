@@ -1,4 +1,4 @@
-// utf by pietro gagliardi (andlabs) — https://github.com/andlabs/utf/
+// utf by pietro gagliardi (andlabs) - https://github.com/andlabs/utf/
 // 10 november 2016
 
 // note the overridden names with uipriv at the beginning; this avoids potential symbol clashes when building libui as a static library
