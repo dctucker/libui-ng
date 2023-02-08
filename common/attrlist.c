@@ -496,7 +496,7 @@ void uiprivAttrListInsertCharactersExtendingAttributes(uiprivAttrList *alist, si
 	}
 }
 
-// TODO replace at point with — replaces with first character's attributes
+// TODO replace at point with - replaces with first character's attributes
 
 void uiprivAttrListRemoveAttribute(uiprivAttrList *alist, uiAttributeType type, size_t start, size_t end)
 {
