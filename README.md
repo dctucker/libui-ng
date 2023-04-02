@@ -68,6 +68,16 @@ For the sake of completeness, I should note that the default value of `--layout`
 
 Backends other than `ninja` should work, but are untested by me.
 
+## Testing
+
+### Automated Unit Tests
+
+Run the included unit tests via `meson test -C build`. Alternatively you can also run the `unit` executable manually.
+
+### Manual Testing Suite
+
+Run the manual quality assurance test suite via `qa` and follow the instructions laid out within.
+
 ## Installation
 
 Meson also supports installing from source; if you use Ninja, just do
@@ -96,7 +106,7 @@ Language | Bindings
 --- | ---
 C++ | [libui-cpp](https://github.com/billyquith/libui-cpp), [cpp-libui-qtlike](https://github.com/aoloe/cpp-libui-qtlike)
 C# / .NET Framework | [LibUI.Binding](https://github.com/NattyNarwhal/LibUI.Binding)
-C# / .NET Core | [DevZH.UI](https://github.com/noliar/DevZH.UI), [SharpUI](https://github.com/benpye/sharpui/), [SimplexiDev.UI](https://github.com/simplexidev/sdfx)
+C# / .NET Core | [DevZH.UI](https://github.com/noliar/DevZH.UI), [SharpUI](https://github.com/benpye/sharpui/)
 CHICKEN Scheme | [wasamasa/libui](https://github.com/wasamasa/libui)
 Common Lisp | [jinwoo/cl-ui](https://github.com/jinwoo/cl-ui)
 Crystal | [libui.cr](https://github.com/Fusion/libui.cr), [hedron](https://github.com/Qwerp-Derp/hedron), [iu](https://github.com/grkek/iu)
@@ -115,7 +125,7 @@ PHP | [ui](https://github.com/krakjoe/ui)
 Python | [pylibui](https://github.com/joaoventura/pylibui)
 Ring | [RingLibui](https://github.com/ring-lang/ring/tree/master/extensions/ringlibui)
 Ruby | [libui-ruby](https://github.com/jamescook/libui-ruby), [LibUI](https://github.com/kojix2/libui), [Glimmer DSL for LibUI](https://github.com/AndyObtiva/glimmer-dsl-libui)
-Rust | [libui-ng-sys](https://github.com/norepimorphism/libui-ng-sys), [boing](https://github.com/norepimorphism/boing), [libui-rs](https://github.com/rust-native-ui/libui-rs)
+Rust | [libui-ng-sys](https://github.com/norepimorphism/libui-ng-sys), [boing](https://github.com/norepimorphism/boing), [libui-rs](https://github.com/rust-native-ui/libui-rs), [libui](https://github.com/libui-rs/libui)
 Scala | [scalaui](https://github.com/lolgab/scalaui)
 Swift | [libui-swift](https://github.com/sclukey/libui-swift)
 
