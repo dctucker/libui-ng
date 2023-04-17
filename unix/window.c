@@ -29,6 +29,15 @@ struct uiWindow {
 	void (*onFocusChanged)(uiWindow *, void *);
 	void *onFocusChangedData;
 	gboolean fullscreen;
+	void (*onPositionChanged)(uiWindow *, void *);
+	void *onPositionChangedData;
+	gboolean changingPosition;
+	gboolean changingSize;
+
+	gint cachedPosX;
+	gint cachedPosY;
+	gint cachedWidth;
+	gint cachedHeight;
 };
 
 static gboolean onClosing(GtkWidget *win, GdkEvent *e, gpointer data)
@@ -44,10 +53,20 @@ static gboolean onClosing(GtkWidget *win, GdkEvent *e, gpointer data)
 
 static void onSizeAllocate(GtkWidget *widget, GdkRectangle *allocation, gpointer data)
 {
+	int width, height;
 	uiWindow *w = uiWindow(data);
 
-	// TODO deal with spurious size-allocates
-	(*(w->onContentSizeChanged))(w, w->onContentSizeChangedData);
+	// Ignore spurious size-allocate events
+	uiWindowContentSize(w, &width, &height);
+	if (width != w->cachedWidth || height != w->cachedHeight) {
+		w->cachedWidth = width;
+		w->cachedHeight = height;
+		if (!w->changingSize)
+			(*(w->onContentSizeChanged))(w, w->onContentSizeChangedData);
+	}
+
+	if (w->changingSize)
+		w->changingSize = FALSE;
 }
 
 static gboolean onGetFocus(GtkWidget *win, GdkEvent *e, gpointer data)
@@ -63,6 +82,27 @@ static gboolean onLoseFocus(GtkWidget *win, GdkEvent *e, gpointer data)
 	uiWindow *w = uiWindow(data);
 	w->focused = 0;
 	w->onFocusChanged(w, w->onFocusChangedData);
+	return FALSE;
+}
+
+static gboolean onConfigure(GtkWidget *win, GdkEvent *e, gpointer data)
+{
+	uiWindow *w = uiWindow(data);
+
+	int x, y;
+
+	// Ignore resize events
+	uiWindowPosition(w, &x, &y);
+	if (x != w->cachedPosX || y != w->cachedPosY) {
+		w->cachedPosX = x;
+		w->cachedPosY = y;
+		if (!w->changingPosition)
+			(*(w->onPositionChanged))(w, w->onPositionChangedData);
+	}
+
+	if (w->changingPosition)
+		w->changingPosition = FALSE;
+
 	return FALSE;
 }
 
@@ -150,6 +190,27 @@ void uiWindowSetTitle(uiWindow *w, const char *title)
 	gtk_window_set_title(w->window, title);
 }
 
+void uiWindowPosition(uiWindow *w, int *x, int *y)
+{
+	gtk_window_get_position(w->window, x, y);
+}
+
+void uiWindowSetPosition(uiWindow *w, int x, int y)
+{
+	w->changingPosition = TRUE;
+	gtk_window_move(w->window, x, y);
+	// gtk_window_move() is asynchronous. Wait for the configure-event
+	while (w->changingPosition)
+		if (!uiMainStep(1))
+			break;
+}
+
+void uiWindowOnPositionChanged(uiWindow *w, void (*f)(uiWindow *, void *), void *data)
+{
+	w->onPositionChanged = f;
+	w->onPositionChangedData = data;
+}
+
 void uiWindowContentSize(uiWindow *w, int *width, int *height)
 {
 	GtkAllocation allocation;
@@ -185,9 +246,13 @@ void uiWindowSetContentSize(uiWindow *w, int width, int height)
 	// now we just need to add the new size back in
 	winWidth += width;
 	winHeight += height;
-	// and set it
-	// this will not move the window in my tests, so we're good
+
+	w->changingSize = TRUE;
 	gtk_window_resize(w->window, winWidth, winHeight);
+	// gtk_window_resize may be asynchronous. Wait for the size-allocate event.
+	while (w->changingSize)
+		if (!uiMainStep(1))
+			break;
 }
 
 int uiWindowFullscreen(uiWindow *w)
@@ -328,11 +393,12 @@ uiWindow *uiNewWindow(const char *title, int width, int height, int hasMenubar)
 	g_signal_connect(w->childHolderWidget, "size-allocate", G_CALLBACK(onSizeAllocate), w);
 	g_signal_connect(w->widget, "focus-in-event", G_CALLBACK(onGetFocus), w);
 	g_signal_connect(w->widget, "focus-out-event", G_CALLBACK(onLoseFocus), w);
+	g_signal_connect(w->widget, "configure-event", G_CALLBACK(onConfigure), w);
 
 	uiWindowOnClosing(w, defaultOnClosing, NULL);
 	uiWindowOnContentSizeChanged(w, defaultOnPositionContentSizeChanged, NULL);
-
 	uiWindowOnFocusChanged(w, defaultOnFocusChanged, NULL);
+	uiWindowOnPositionChanged(w, defaultOnPositionContentSizeChanged, NULL);
 
 	// normally it's SetParent() that does this, but we can't call SetParent() on a uiWindow
 	// TODO we really need to clean this up, especially since see uiWindowDestroy() above
