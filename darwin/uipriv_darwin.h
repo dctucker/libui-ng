@@ -87,6 +87,8 @@ extern NSTextField *uiprivNewEditableTextField(void);
 - (void)windowDidExitFullScreen:(NSNotification *)note;
 - (void)windowDidBecomeKey:(NSNotification *)note;
 - (void)windowDidResignKey:(NSNotification *)note;
+- (BOOL)canBecomeKeyWindow;
+- (BOOL)canBecomeMainWindow;
 - (uiWindow *)window;
 - (void)uiprivDoMove:(NSEvent *)initialEvent;
 - (void)uiprivDoResize:(NSEvent *)initialEvent on:(uiWindowResizeEdge)edge;

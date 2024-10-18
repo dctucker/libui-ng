@@ -3,6 +3,20 @@
 
 #define defaultStyleMask (NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask)
 
+/*
+@interface uiNSWindow: NSWindow {}
+@end
+
+@implementation uiNSWindow
+- (BOOL) canBecomeKeyWindow {
+	return YES;
+}
+- (BOOL) canBecomeMainWindow {
+	return YES;
+}
+@end
+*/
+
 struct uiWindow {
 	uiDarwinControl c;
 	NSWindow *window;
@@ -111,6 +125,16 @@ struct uiWindow {
 
 	w->focused = 0;
 	(*(w->onFocusChanged))(w, w->onFocusChangedData);
+}
+
+- (BOOL)canBecomeKeyWindow
+{
+	return YES;
+}
+
+- (BOOL)canBecomeMainWindow
+{
+	return YES;
 }
 
 - (uiWindow *)window
